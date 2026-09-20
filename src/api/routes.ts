@@ -1,4 +1,4 @@
-import { ClientReport, Curriculum, CurriculumGenerateResponseSchema, Lesson, LESSON_SCHEMA_VERSION, LessonGenerateResponseSchema, parseLesson } from "../types";
+import { ClientReport, Curriculum, CurriculumGenerateResponseSchema, Lesson, LESSON_SCHEMA_VERSION, LessonGenerateResponseSchema, LessonSchema } from "../types";
 import { apiBaseUrl, ApiClientError, CurriculumRequest, LessonRequest, postJson } from "./client";
 
 export async function generateCurriculum(request: CurriculumRequest): Promise<Curriculum> {
@@ -16,7 +16,8 @@ export async function generateCurriculum(request: CurriculumRequest): Promise<Cu
 export async function generateLesson(request: LessonRequest): Promise<Lesson> {
   const json = await postJson("/v1/lessons/generate", request);
   const parsed = LessonGenerateResponseSchema.safeParse(json);
-  const lesson = parsed.success ? parseLesson(parsed.data.lesson) : null;
+  const parsedLesson = parsed.success ? LessonSchema.safeParse(parsed.data.lesson) : null;
+  const lesson = parsedLesson?.success ? parsedLesson.data : null;
   if (!lesson) {
     sendReport({
       kind: "schema_mismatch",

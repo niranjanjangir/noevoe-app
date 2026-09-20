@@ -20,10 +20,3 @@ export const LessonSchema = z.strictObject({
   completionCriteria: CompletionCriteriaSchema,
 });
 export type Lesson = z.infer<typeof LessonSchema>;
-
-export const GeneratedLessonSchema = LessonSchema.omit({
-  id: true,
-  schemaVersion: true,
-  capabilityId: true,
-});
-export type GeneratedLesson = z.infer<typeof GeneratedLessonSchema>;
