@@ -1,0 +1,117 @@
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { Alert, ScrollView, StyleSheet, Text, View } from "react-native";
+import {
+  capabilityProgress,
+  restoreCapability,
+  restoreLesson,
+  retireCapability,
+  retireLesson,
+  type SavedCapability,
+  type SavedLesson,
+} from "../../src/helpers";
+import { usePaths } from "../../src/state/PathsContext";
+import { Button } from "../../src/ui/Button";
+import { LessonRow } from "../../src/ui/LessonRow";
+import { colors, radius, spacing, typography } from "../../src/ui/theme";
+
+export default function CapabilityScreen() {
+  const router = useRouter();
+  const { id } = useLocalSearchParams<{ id: string }>();
+  const { activePath, updateActivePath } = usePaths();
+
+  const capability = findCapability(activePath?.capabilities ?? [], id ?? "");
+  if (!capability) {
+    return (
+      <View style={styles.centered}>
+        <Text style={typography.heading}>This capability is no longer here.</Text>
+        <Button label="Back to path" kind="secondary" onPress={() => router.replace("/path")} />
+      </View>
+    );
+  }
+
+  const retired = capability.status === "RETIRED";
+  const completed = capability.status === "COMPLETED";
+  const progress = capabilityProgress(capability);
+
+  function lessonMenu(lesson: SavedLesson) {
+    if (lesson.status === "COMPLETED") return;
+    if (lesson.status === "RETIRED") {
+      updateActivePath((p) => restoreLesson(p, lesson.id));
+      return;
+    }
+    Alert.alert("Retire this lesson?", "Retiring skips this lesson. You can restore it later. Have fun with the others!", [
+      { text: "Cancel", style: "cancel" },
+      { text: "Retire lesson", style: "destructive", onPress: () => updateActivePath((p) => retireLesson(p, lesson.id)) },
+    ]);
+  }
+
+  function confirmRetireCapability() {
+    const capabilityId = capability!.id;
+    Alert.alert("Retire this capability?", "Retiring skips this capability. You can restore it later. Have fun with the others!", [
+      { text: "Cancel", style: "cancel" },
+      { text: "Retire", style: "destructive", onPress: () => updateActivePath((p) => retireCapability(p, capabilityId)) },
+    ]);
+  }
+
+  return (
+    <ScrollView contentContainerStyle={styles.container}>
+      <Text style={[typography.title, retired && styles.struck]}>{capability.title}</Text>
+      {retired && <Text style={styles.retiredNote}>Retired. Lessons here do not count towards your progress.</Text>}
+      <Text style={typography.body}>{capability.description}</Text>
+
+      <View style={styles.criterionSection}>
+        <Text style={typography.heading}>You'll be able to…</Text>
+        {capability.masteryCriteria.map((criterion) => (
+          <Text key={criterion} style={typography.body}>
+            • {criterion}
+          </Text>
+        ))}
+      </View>
+
+      <View style={styles.section}>
+        <Text style={typography.heading}>
+          Lessons ({progress.done} / {progress.total} done)
+        </Text>
+        {capability.lessons.map((lesson, i) => (
+          <LessonRow
+            key={lesson.id}
+            lesson={lesson}
+            number={i + 1}
+            isLast={i === capability.lessons.length - 1}
+            onPress={() => router.push(`/lesson/${lesson.id}`)}
+            onLongPress={() => lessonMenu(lesson)}
+            onRestore={() => updateActivePath((p) => restoreLesson(p, lesson.id))}
+          />
+        ))}
+        <Text style={styles.hint}>Long press a lesson to retire it.</Text>
+      </View>
+
+      <View style={styles.footer}>
+        {retired && (
+          <Button label="Restore this capability" onPress={() => updateActivePath((p) => restoreCapability(p, capability.id))} testID="restore-capability" />
+        )}
+        {!retired && !completed && (
+          <Button label="Retire this capability" kind="secondary" onPress={confirmRetireCapability} testID="retire-capability" />
+        )}
+      </View>
+    </ScrollView>
+  );
+}
+
+function findCapability(capabilities: SavedCapability[], id: string): SavedCapability | null {
+  for (const capability of capabilities) {
+    if (capability.id === id) return capability;
+  }
+  return null;
+}
+
+const styles = StyleSheet.create({
+  container: { padding: spacing.xl, gap: spacing.lg, backgroundColor: colors.background, flexGrow: 1 },
+  centered: { flex: 1, justifyContent: "center", alignItems: "center", gap: spacing.lg, padding: spacing.xl, backgroundColor: colors.background },
+  criterionSection: { gap: spacing.sm, borderWidth: 1, borderColor: colors.primaryPressed, borderRadius: radius.sm, padding: spacing.md },
+  section: { gap: spacing.sm },
+  struck: { textDecorationLine: "line-through", color: colors.retired },
+  retiredNote: { ...typography.caption, color: colors.warning },
+  hint: { ...typography.caption, color: colors.textFaint },
+  footer: { marginTop: "auto", paddingTop: spacing.lg },
+});
