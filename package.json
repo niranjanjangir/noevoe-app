@@ -1,7 +1,7 @@
 {
   "name": "noevoe-learn-hobby",
   "version": "0.1.0",
-  "description": "Noevoe - Learn Hobby: Hobby learning app.",
+  "description": "noevoe - Learn Hobby: Hobby learning app.",
   "main": "expo-router/entry",
   "private": true,
   "scripts": {
