@@ -46,6 +46,7 @@ export function createPathFromCurriculum(curriculum: Curriculum, input: Onboardi
   const path: SavedPath = {
     id: newId("path"),
     hobby: curriculum.hobby,
+    hobbyDescription: input.hobbyDescription,
     goal: curriculum.goal,
     targetLevel: input.targetLevel,
     currentLevel: input.currentLevel,

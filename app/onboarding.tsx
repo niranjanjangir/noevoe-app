@@ -34,7 +34,7 @@ const STEP_COUNT = 3;
 
 export default function OnboardingScreen() {
   const router = useRouter();
-  const { createPath } = usePaths();
+  const { createPath, findDuplicatePath } = usePaths();
 
   const [step, setStep] = useState(1);
   const [hobby, setHobby] = useState("");
@@ -76,6 +76,14 @@ export default function OnboardingScreen() {
   async function generate() {
     const input = buildInput();
     if (!input) return;
+
+    const duplicatePath = await findDuplicatePath(input);
+    if (duplicatePath) {
+      setRejectedReason("You already have a path with these choices.");
+      setStep(1);
+      return;
+    }
+
     setGenerating(true);
     setErrorMessage(null);
     setRejectedReason(null);
@@ -149,7 +157,7 @@ export default function OnboardingScreen() {
                 style={styles.input}
                 testID="hobby-input"
               />
-              {rejectedReason && <Text style={styles.rejected}>{rejectedReason}</Text>}
+              {rejectedReason && <Text style={styles.rejected}>Previous request could not be completed: {rejectedReason}</Text>}
               <View style={styles.pills}>
                 {EXAMPLES.map((example) => (
                   <Pill key={example} label={example} onPress={() => setHobby(example)} />

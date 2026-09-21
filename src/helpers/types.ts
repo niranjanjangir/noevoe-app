@@ -26,6 +26,7 @@ export type SavedCapability = {
 export type SavedPath = {
   id: string;
   hobby: string;
+  hobbyDescription?: string;
   goal: string;
   targetLevel: TargetLevel;
   currentLevel: CurrentLevel;

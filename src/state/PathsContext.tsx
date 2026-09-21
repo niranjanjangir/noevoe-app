@@ -16,8 +16,8 @@ type PathsState = {
   index: PathIndex;
   activePath: SavedPath | null;
   saveError: string | null;
-  /** The newest active path, readable from long-running code without waiting for a render. */
   getActivePath: () => SavedPath | null;
+  findDuplicatePath: (input: OnboardingInput) => Promise<SavedPath | null>;
   createPath: (curriculum: Curriculum, input: OnboardingInput) => Promise<SavedPath | null>;
   updateActivePath: (change: (path: SavedPath) => boolean) => Promise<boolean>;
   switchPath: (pathId: string) => Promise<boolean>;
@@ -45,6 +45,23 @@ export function PathsProvider({ children }: { children: ReactNode }) {
 
   function getActivePath(): SavedPath | null {
     return activePathRef.current;
+  }
+
+  async function findDuplicatePath(input: OnboardingInput): Promise<SavedPath | null> {
+    const currentIndex = await loadIndex();
+    const paths = await Promise.all(currentIndex.pathIds.map((pathId) => loadPath(pathId)));
+    for (const path of paths) {
+      if (
+        path &&
+        (path.hobbyDescription ?? path.hobby) === input.hobbyDescription &&
+        path.targetLevel === input.targetLevel &&
+        path.currentLevel === input.currentLevel &&
+        path.currentLevelNote === input.currentLevelNote
+      ) {
+        return path;
+      }
+    }
+    return null;
   }
 
   async function reload() {
@@ -139,6 +156,7 @@ export function PathsProvider({ children }: { children: ReactNode }) {
     activePath,
     saveError,
     getActivePath,
+    findDuplicatePath,
     createPath,
     updateActivePath,
     switchPath,
