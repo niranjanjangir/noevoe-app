@@ -20,7 +20,7 @@ export function PracticeBlock({ blockId, payload, result, onResult }: Props) {
   if (payload.repetitions) details.push(payload.repetitions + (payload.repetitions === 1 ? " time" : " times"));
 
   function markDone() {
-    onResult({ blockId, status: "completed", attempts: 1, at: new Date().toISOString() });
+    onResult({ blockId, status: "completed", at: new Date().toISOString() });
   }
 
   return (

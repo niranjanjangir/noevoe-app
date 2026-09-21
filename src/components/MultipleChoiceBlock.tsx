@@ -14,20 +14,16 @@ type Props = {
 export function MultipleChoiceBlock({ blockId, payload, result, onResult }: Props) {
   const alreadyCorrect = result?.status === "success";
   const [chosenId, setChosenId] = useState<string | null>(alreadyCorrect ? payload.correctOptionId : null);
-  const [attempts, setAttempts] = useState(result?.attempts ?? 0);
 
   const answered = chosenId !== null;
   const isCorrect = chosenId === payload.correctOptionId;
 
   function choose(optionId: string) {
     if (isCorrect) return;
-    const nextAttempts = attempts + 1;
     setChosenId(optionId);
-    setAttempts(nextAttempts);
     onResult({
       blockId,
       status: optionId === payload.correctOptionId ? "success" : "incorrect",
-      attempts: nextAttempts,
       detail: { optionId },
       at: new Date().toISOString(),
     });

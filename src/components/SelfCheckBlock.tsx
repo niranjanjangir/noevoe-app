@@ -27,7 +27,7 @@ export function SelfCheckBlock({ blockId, payload, result, onResult }: Props) {
   }
 
   function finish() {
-    onResult({ blockId, status: "completed", attempts: 1, at: new Date().toISOString() });
+    onResult({ blockId, status: "completed", at: new Date().toISOString() });
   }
 
   return (

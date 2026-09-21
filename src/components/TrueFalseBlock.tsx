@@ -14,20 +14,16 @@ type Props = {
 export function TrueFalseBlock({ blockId, payload, result, onResult }: Props) {
   const alreadyCorrect = result?.status === "success";
   const [chosen, setChosen] = useState<boolean | null>(alreadyCorrect ? payload.answer : null);
-  const [attempts, setAttempts] = useState(result?.attempts ?? 0);
 
   const answered = chosen !== null;
   const isCorrect = chosen === payload.answer;
 
   function choose(value: boolean) {
     if (isCorrect) return;
-    const nextAttempts = attempts + 1;
     setChosen(value);
-    setAttempts(nextAttempts);
     onResult({
       blockId,
       status: value === payload.answer ? "success" : "incorrect",
-      attempts: nextAttempts,
       detail: { answer: value },
       at: new Date().toISOString(),
     });
