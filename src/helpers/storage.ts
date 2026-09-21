@@ -46,17 +46,6 @@ export async function savePath(path: SavedPath): Promise<boolean> {
   }
 }
 
-export async function clearAllData(): Promise<boolean> {
-  try {
-    const keys = await AsyncStorage.getAllKeys();
-    const relatedKeys = keys.filter((key) => key.startsWith("noevoe:"));
-    await AsyncStorage.multiRemove(relatedKeys);
-    return true;
-  } catch {
-    return false;
-  }
-}
-
 export async function deletePath(pathId: string): Promise<boolean> {
   try {
     await AsyncStorage.removeItem(pathKey(pathId));
