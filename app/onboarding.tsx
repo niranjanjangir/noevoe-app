@@ -66,6 +66,11 @@ export default function OnboardingScreen() {
     router.back();
   }
 
+  function updateHobby(value: string) {
+    setHobby(value);
+    setRejectedReason(null);
+  }
+
   function buildInput(): OnboardingInput | null {
     if (!hobbyOk || !targetLevel || !currentLevel) return null;
     const input: OnboardingInput = { hobbyDescription: hobby.trim(), targetLevel, currentLevel };
@@ -149,7 +154,7 @@ export default function OnboardingScreen() {
               <Text style={typography.title}>What do you want to learn?</Text>
               <TextInput
                 value={hobby}
-                onChangeText={setHobby}
+                onChangeText={updateHobby}
                 placeholder="e.g. photography, so I can take good pictures on travel"
                 placeholderTextColor={colors.textFaint}
                 multiline
@@ -160,7 +165,7 @@ export default function OnboardingScreen() {
               {rejectedReason && <Text style={styles.rejected}>Previous request could not be completed: {rejectedReason}</Text>}
               <View style={styles.pills}>
                 {EXAMPLES.map((example) => (
-                  <Pill key={example} label={example} onPress={() => setHobby(example)} />
+                  <Pill key={example} label={example} onPress={() => updateHobby(example)} />
                 ))}
               </View>
             </View>
