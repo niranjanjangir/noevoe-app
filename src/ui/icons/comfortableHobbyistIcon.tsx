@@ -3,11 +3,11 @@ import { colors } from "../theme";
 
 export function ComfortableHobbyistIcon() {
   return (
-    <Svg width={30} height={30} viewBox="0 0 30 30">
-      <Path d="M15 4a11 11 0 1 0 10.2 6.8" fill="none" stroke={colors.accent} strokeWidth={2} strokeLinecap="round" />
-      <Path d="M15 4v6h6" fill="none" stroke={colors.accent} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
-      <Circle cx="15" cy="19" r="3" fill={colors.primary} stroke={colors.accent} strokeWidth={1.5} />
-      <Path d="M15 16v-4M12 19H8" fill="none" stroke={colors.accent} strokeWidth={1.5} strokeLinecap="round" />
+    <Svg width={30} height={30} viewBox="0 0 30 30" accessibilityLabel="Smiling face">
+      <Circle cx="15" cy="15" r="12" fill={colors.primary} stroke={colors.accent} strokeWidth={1.5} />
+      <Circle cx="11" cy="12" r="1.4" fill={colors.accent} />
+      <Circle cx="19" cy="12" r="1.4" fill={colors.accent} />
+      <Path d="M9 17c1.5 4 10.5 4 12 0" fill="none" stroke={colors.accent} strokeWidth={1.8} strokeLinecap="round" />
     </Svg>
   );
 }
