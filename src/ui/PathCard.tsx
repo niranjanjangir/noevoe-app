@@ -21,7 +21,10 @@ export function PathCard({ path, active, onPress, onLongPress }: Props) {
     >
       <View style={styles.header}>
         <Text style={typography.heading}>{path.hobby}</Text>
-        {active && <Text style={styles.badge}>Active</Text>}
+        <View style={styles.badgeContainer}>
+          {active && <Text style={styles.badge}>Last visited</Text>}
+          {progress.completed === progress.active && <Text style={styles.badge}>Completed</Text>}
+        </View>
       </View>
       <Text style={typography.caption}>{path.goal}</Text>
       <Text style={styles.progress}>
@@ -43,6 +46,7 @@ const styles = StyleSheet.create({
   active: { borderColor: colors.accent },
   pressed: { backgroundColor: colors.surfaceMuted },
   header: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
+  badgeContainer:{flexDirection: "row", gap: 8,},
   badge: {
     fontSize: 12,
     fontWeight: "600",
