@@ -59,21 +59,9 @@ export function errorMessage(err: unknown): string {
 
 const REQUEST_TIMEOUT_MS = 150_000;
 
-const DEFAULT_BASE_URL = "http://localhost:8787";
-
 export function apiBaseUrl(): string {
   const extra = Constants.expoConfig?.extra as { apiBaseUrl?: string } | undefined;
-  const configured = extra?.apiBaseUrl ?? DEFAULT_BASE_URL;
-  return withDevServerHost(configured, Constants.expoConfig?.hostUri);
-}
-
-// TODO: remove it later
-export function withDevServerHost(configured: string, hostUri: string | undefined): string {
-  const isLocalhost = configured.includes("://localhost") || configured.includes("://127.0.0.1");
-  if (!isLocalhost || !hostUri) return configured;
-  const devHost = hostUri.split(":")[0];
-  if (!devHost || devHost === "localhost" || devHost === "127.0.0.1") return configured;
-  return configured.replace("localhost", devHost).replace("127.0.0.1", devHost);
+  return extra?.apiBaseUrl ?? "";
 }
 
 export async function postJson(path: string, body: unknown): Promise<unknown> {
