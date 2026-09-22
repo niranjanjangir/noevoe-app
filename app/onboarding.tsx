@@ -1,6 +1,7 @@
 import { Stack, useRouter } from "expo-router";
+import LottieView from "lottie-react-native";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, BackHandler, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import { BackHandler, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { ApiClientError, errorMessage as displayErrorMessage } from "../src/api/client";
 import {
   CURRENT_LEVELS,
@@ -123,8 +124,13 @@ export default function OnboardingScreen() {
 
   if (generating) {
     return (
-      <View style={styles.centered} testID="onboarding-loading">
-        <ActivityIndicator size="large" color={colors.accent} />
+      <View style={styles.generatingContainer} testID="onboarding-loading">
+        <LottieView
+          source={require("../assets/lottie/generatingPathAnimation.json")}
+          autoPlay
+          loop
+          style={styles.generatingAnimation}
+        />
         <Text style={typography.heading}>Building your path…</Text>
         <Text style={typography.caption}>This usually takes under a minute.</Text>
       </View>
@@ -280,8 +286,10 @@ function LevelIcon({ kind }: { kind: TargetLevel | CurrentLevel }) {
 
 const styles = StyleSheet.create({
   keyboardAvoidingView: { flex: 1 },
-  container: { padding: spacing.xl, gap: spacing.sm, backgroundColor: colors.background, flexGrow: 1 },
+  container: { padding: spacing.xl, gap: spacing.xxl, backgroundColor: colors.background, flexGrow: 1 },
   centered: { flex: 1, padding: spacing.xl, justifyContent: "center", alignItems: "center", gap: spacing.md, backgroundColor: colors.background },
+  generatingContainer: { flex: 1, justifyContent: "center", alignItems: "center", gap: spacing.md, backgroundColor: colors.background, marginBottom: 52 },
+  generatingAnimation: { width: "100%", aspectRatio: 1278 / 996, alignSelf: "stretch", },
   section: { gap: spacing.md },
   input: {
     ...typography.body,
