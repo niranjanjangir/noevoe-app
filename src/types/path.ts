@@ -39,15 +39,3 @@ export const CapabilitySchema = z.strictObject({
   lessons: z.array(LessonRefSchema).min(1).max(6),
 });
 export type Capability = z.infer<typeof CapabilitySchema>;
-
-export const HobbyPathSchema = z.strictObject({
-  id: z.string().min(1).max(80),
-  hobby: z.string().min(1).max(80),
-  goal: z.string().min(1).max(200),
-  targetLevel: TargetLevelSchema,
-  currentLevel: CurrentLevelSchema,
-  currentLevelNote: z.string().max(300).optional(),
-  capabilities: z.array(CapabilitySchema).min(1).max(12),
-  createdAt: z.string().datetime(),
-});
-export type HobbyPath = z.infer<typeof HobbyPathSchema>;

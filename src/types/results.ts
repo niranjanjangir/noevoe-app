@@ -7,7 +7,6 @@ export type BlockResultStatus = z.infer<typeof BlockResultStatusSchema>;
 export const BlockResultSchema = z.strictObject({
   blockId: z.string().min(1).max(64),
   status: BlockResultStatusSchema,
-  attempts: z.number().int().min(0),
   detail: z.record(z.string(), z.unknown()).optional(),
   at: z.string().datetime(),
 });
