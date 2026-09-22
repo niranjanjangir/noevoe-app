@@ -1,7 +1,7 @@
 import { useRouter } from "expo-router";
 import LottieView from "lottie-react-native";
-import { useState } from "react";
-import { Pressable, RefreshControl, ScrollView, StyleSheet, Text, View } from "react-native";
+import { useEffect, useState } from "react";
+import { BackHandler, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View } from "react-native";
 import { generationProgress, usePregenerate } from "../src/api/pregenerate";
 import { nextLessonIn, pathProgress, restoreCapability, type SavedCapability, type SavedPath } from "../src/helpers";
 import { usePaths } from "../src/state/PathsContext";
@@ -16,6 +16,15 @@ export default function PathScreen() {
   const { activePath, updateActivePath, saveError, reload } = usePaths();
   const [refreshing, setRefreshing] = useState(false);
   const pregeneration = usePregenerate();
+
+  useEffect(() => {
+    const subscription = BackHandler.addEventListener("hardwareBackPress", () => {
+      router.dismissTo("/paths");
+      return true;
+    });
+
+    return () => subscription.remove();
+  }, [router]);
 
   if (!activePath) {
     return (
@@ -50,7 +59,7 @@ export default function PathScreen() {
       <OfflineBanner />
       <View style={styles.headerRow}>
         <Text style={styles.eyebrow}>Your {path.hobby} path</Text>
-        <Pressable onPress={() => router.push("/paths")} accessibilityRole="button" testID="all-paths" hitSlop={8}>
+        <Pressable onPress={() => router.dismissTo("/paths")} accessibilityRole="button" testID="all-paths" hitSlop={8}>
           <Text style={styles.link}>All paths</Text>
         </Pressable>
       </View>
@@ -90,7 +99,7 @@ export default function PathScreen() {
               isLast={index === path.capabilities.length - 1}
               nextLessonTitle={next?.title}
               onPress={() => router.push(`/capability/${capability.id}`)}
-              onContinue={next ? () => router.push(`/lesson/${next.id}`) : undefined}
+              onContinue={next ? () => router.push(`/capability/${capability.id}?lessonId=${next.id}`) : undefined}
               onRestore={() => updateActivePath((p) => restoreCapability(p, capability.id))}
             />
           );

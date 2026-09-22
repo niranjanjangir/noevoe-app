@@ -34,7 +34,7 @@ const STEP_COUNT = 3;
 
 export default function OnboardingScreen() {
   const router = useRouter();
-  const { createPath, findDuplicatePath } = usePaths();
+  const { createPath, findDuplicatePath, index } = usePaths();
 
   const [step, setStep] = useState(1);
   const [hobby, setHobby] = useState("");
@@ -48,13 +48,17 @@ export default function OnboardingScreen() {
 
   useEffect(() => {
     const subscription = BackHandler.addEventListener("hardwareBackPress", () => {
-      if (generating || step <= 1) return false;
+      if (generating) return true;
+      if (step <= 1) {
+        if (index.pathIds.length > 0) router.dismissTo("/paths");
+        return index.pathIds.length > 0;
+      }
       setStep((currentStep) => currentStep - 1);
       return true;
     });
 
     return () => subscription.remove();
-  }, [generating, step]);
+  }, [generating, index.pathIds.length, router, step]);
 
   const hobbyOk = hobby.trim().length >= 3;
 
@@ -63,7 +67,11 @@ export default function OnboardingScreen() {
       setStep((currentStep) => currentStep - 1);
       return;
     }
-    router.back();
+    if (index.pathIds.length > 0) {
+      router.dismissTo("/paths");
+    } else {
+      router.back();
+    }
   }
 
   function updateHobby(value: string) {
@@ -99,6 +107,7 @@ export default function OnboardingScreen() {
         setErrorMessage("Your path was created but could not be saved on this device.");
         return;
       }
+      router.dismissTo("/paths");
       router.push("/path");
     } catch (err) {
       if (err instanceof ApiClientError && err.code === "rejected") {

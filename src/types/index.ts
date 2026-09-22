@@ -2,7 +2,6 @@ export * from "./api";
 export * from "./blocks";
 export * from "./curriculum";
 export * from "./events";
-export * from "./issues";
 export * from "./lesson";
 export * from "./levels";
 export * from "./path";

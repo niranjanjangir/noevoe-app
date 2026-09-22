@@ -1,8 +1,11 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { capabilityProgress, type SavedCapability } from "../helpers";
+import { capabilityProgress, retireCapability, type SavedCapability } from "../helpers";
 import { Button } from "./Button";
 import { CheckIcon, RetiredIcon } from "./icons";
 import { colors, radius, spacing, typography } from "./theme";
+import { useEffect } from "react";
+import { usePaths } from "../state/PathsContext";
+
 
 export type RowState = "done" | "current" | "upcoming" | "retired";
 
@@ -31,6 +34,13 @@ export function CapabilityRow({ capability, state, index, isLast, nextLessonTitl
   const progress = capabilityProgress(capability);
   const isCurrent = state === "current";
   const isRetired = state === "retired";
+  const { updateActivePath } = usePaths();
+
+  useEffect(()=>{
+    if(isCurrent && !nextLessonTitle) {
+      updateActivePath((p) => retireCapability(p, capability.id))
+    }
+  },[isCurrent, nextLessonTitle, updateActivePath, capability.id])
 
   return (
     <View style={styles.timelineItem}>

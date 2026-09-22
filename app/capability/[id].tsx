@@ -1,5 +1,6 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { Alert, ScrollView, StyleSheet, Text, View } from "react-native";
+import { useEffect, useRef } from "react";
+import { Alert, BackHandler, ScrollView, StyleSheet, Text, View } from "react-native";
 import {
   capabilityProgress,
   restoreCapability,
@@ -16,10 +17,27 @@ import { colors, radius, spacing, typography } from "../../src/ui/theme";
 
 export default function CapabilityScreen() {
   const router = useRouter();
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const { id, lessonId } = useLocalSearchParams<{ id: string; lessonId?: string }>();
   const { activePath, updateActivePath } = usePaths();
 
   const capability = findCapability(activePath?.capabilities ?? [], id ?? "");
+  const openedLesson = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (!capability || !lessonId || openedLesson.current === lessonId) return;
+    openedLesson.current = lessonId;
+    router.push(`/lesson/${lessonId}`);
+  }, [capability, lessonId, router]);
+
+  useEffect(() => {
+    const subscription = BackHandler.addEventListener("hardwareBackPress", () => {
+      router.dismissTo(`/path`);
+      return true;
+    });
+
+    return () => subscription.remove();
+  }, [router]);
+
   if (!capability) {
     return (
       <View style={styles.centered}>

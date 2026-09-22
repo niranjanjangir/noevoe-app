@@ -1,6 +1,6 @@
-import { useRouter } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { Alert, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Alert, BackHandler, ScrollView, StyleSheet, Text, View } from "react-native";
 import { loadPath, type SavedPath } from "../src/helpers";
 import { usePaths } from "../src/state/PathsContext";
 import { Button } from "../src/ui/Button";
@@ -11,6 +11,15 @@ export default function PathsScreen() {
   const router = useRouter();
   const { index, activePath, switchPath, deletePath } = usePaths();
   const [paths, setPaths] = useState<SavedPath[]>([]);
+
+  useEffect(() => {
+    const subscription = BackHandler.addEventListener("hardwareBackPress", () => {
+      BackHandler.exitApp();
+      return true;
+    });
+
+    return () => subscription.remove();
+  }, []);
 
   const idsKey = index.pathIds.join(",");
   useEffect(() => {
@@ -39,23 +48,26 @@ export default function PathsScreen() {
   }
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={typography.title}>Your paths</Text>
-      {paths.length == 0 && <Text style={typography.caption}>No paths yet.</Text>}
-      {paths.map((path) => (
-        <PathCard
-          key={path.id}
-          path={path}
-          active={path.id === index.activePathId}
-          onPress={() => open(path)}
-          onLongPress={() => confirmDelete(path)}
-        />
-      ))}
-      {paths.length > 0 && <Text style={styles.hint}>Long press a path to delete it.</Text>}
-      <View style={styles.footer}>
-        <Button label="Start a new path" onPress={() => router.push("/onboarding")} testID="new-path" />
-      </View>
-    </ScrollView>
+    <>
+      <Stack.Screen options={{ headerBackVisible: false }} />
+      <ScrollView contentContainerStyle={styles.container}>
+        <Text style={typography.title}>Your paths</Text>
+        {paths.length == 0 && <Text style={typography.caption}>No paths yet.</Text>}
+        {paths.map((path) => (
+          <PathCard
+            key={path.id}
+            path={path}
+            active={path.id === index.activePathId}
+            onPress={() => open(path)}
+            onLongPress={() => confirmDelete(path)}
+          />
+        ))}
+        {paths.length > 0 && <Text style={styles.hint}>Long press a path to delete it.</Text>}
+        <View style={styles.footer}>
+          <Button label="Start a new path" onPress={() => router.push("/onboarding")} testID="new-path" />
+        </View>
+      </ScrollView>
+    </>
   );
 }
 

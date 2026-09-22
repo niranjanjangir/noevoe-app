@@ -1,6 +1,6 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, BackHandler, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useLesson } from "../../src/api/useLesson";
 
 import type { BlockResult } from "../../src/types";
@@ -24,6 +24,15 @@ export default function LessonScreen() {
 
   const found = activePath ? findLesson(activePath, lessonId) : null;
   const capability = found?.capability ?? null;
+
+  useEffect(() => {
+    const subscription = BackHandler.addEventListener("hardwareBackPress", () => {
+      router.dismissTo(`/capability/${capability?.id}`);
+      return true;
+    });
+
+    return () => subscription.remove();
+  }, [router, capability?.id]);
 
   useEffect(() => {
     if (!content || !saved) return;

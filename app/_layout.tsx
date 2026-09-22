@@ -18,8 +18,8 @@ export default function RootLayout() {
       >
         <Stack.Screen name="index" options={{ title: "noevoe", headerShown: false }} />
         <Stack.Screen name="onboarding" options={{ title: "New path" }} />
-        <Stack.Screen name="paths" options={{ title: "Your paths" }} />
-        <Stack.Screen name="path" options={{ title: "noevoe", headerBackVisible: false }} />
+        <Stack.Screen name="paths" options={{ title: "Your paths", headerBackVisible: false, gestureEnabled: false }} />
+        <Stack.Screen name="path" options={{ title: "noevoe", headerBackVisible: false, gestureEnabled: false }} />
         <Stack.Screen name="capability/[id]" options={{ title: "Capability" }} />
         <Stack.Screen name="lesson/[id]" options={{ title: "Lesson" }} />
       </Stack>

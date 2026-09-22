@@ -1,4 +1,5 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
+import { useRef } from "react";
 import type { LessonStatus, SavedLesson } from "../helpers";
 import { AbandonedIcon, CheckIcon, InProgressIcon, RetiredIcon } from "./icons";
 import { colors, radius, spacing, typography } from "./theme";
