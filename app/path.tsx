@@ -2,7 +2,7 @@ import { useRouter } from "expo-router";
 import LottieView from "lottie-react-native";
 import { useEffect, useState } from "react";
 import { BackHandler, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View } from "react-native";
-import { generationProgress, usePregenerate } from "../src/api/pregenerate";
+import { usePregenerate } from "../src/api/pregenerate";
 import { nextLessonIn, pathProgress, restoreCapability, type SavedCapability, type SavedPath } from "../src/helpers";
 import { usePaths } from "../src/state/PathsContext";
 import { Button } from "../src/ui/Button";
@@ -72,16 +72,6 @@ export default function PathScreen() {
           Progress: {progress.completed} / {progress.active} capabilities achieved
         </Text>
         <ProgressBar ratio={progress.ratio} />
-        {pregeneration.paused ? (
-          <View style={styles.pausedRow}>
-            <Text style={[typography.caption, styles.pausedText]}>Waiting for a connection to prepare lessons.</Text>
-            <Pressable onPress={pregeneration.start} accessibilityRole="button" testID="resume-preparing" hitSlop={8}>
-              <Text style={styles.link}>Retry</Text>
-            </Pressable>
-          </View>
-        ) : (
-          <PreparingLine path={path} />
-        )}
       </View>
 
       {saveError && <Text style={styles.error}>{saveError}</Text>}
@@ -119,26 +109,6 @@ export default function PathScreen() {
       )}
     </ScrollView>
   );
-}
-
-function PreparingLine({ path }: { path: SavedPath }) {
-  const generation = generationProgress(path);
-  const settled = generation.ready + generation.failed;
-  if (settled < generation.total) {
-    return (
-      <Text style={typography.caption} testID="preparing">
-        Preparing lessons… {generation.ready} / {generation.total}
-      </Text>
-    );
-  }
-  if (generation.failed > 0) {
-    return (
-      <Text style={typography.caption}>
-        {generation.failed} {generation.failed === 1 ? "lesson" : "lessons"} could not be prepared. They will be generated when opened.
-      </Text>
-    );
-  }
-  return null;
 }
 
 const styles = StyleSheet.create({
