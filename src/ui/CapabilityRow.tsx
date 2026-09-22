@@ -34,13 +34,6 @@ export function CapabilityRow({ capability, state, index, isLast, nextLessonTitl
   const progress = capabilityProgress(capability);
   const isCurrent = state === "current";
   const isRetired = state === "retired";
-  const { updateActivePath } = usePaths();
-
-  useEffect(()=>{
-    if(isCurrent && !nextLessonTitle) {
-      updateActivePath((p) => retireCapability(p, capability.id))
-    }
-  },[isCurrent, nextLessonTitle, updateActivePath, capability.id])
 
   return (
     <View style={styles.timelineItem}>
