@@ -29,8 +29,6 @@ export function useLesson(lessonId: string): LessonLoad {
 
   useEffect(() => {
     if (status === null || status === "ready") return;
-    // A failed lesson is only fetched again after the user presses retry.
-    if (status === "failed" && attempt === 0) return;
     setBusy(true);
     setOutcome(null);
     generateAndSave(lessonId, getActivePath, updateActivePath).then((result) => {
