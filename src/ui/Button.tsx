@@ -5,7 +5,7 @@ import { colors, radius, spacing } from "./theme";
 type Props = {
   label: string;
   onPress: () => void;
-  kind?: "primary" | "secondary";
+  kind?: "primary" | "secondary" | "danger";
   disabled?: boolean;
   testID?: string;
   style?: StyleProp<ViewStyle>;
@@ -14,6 +14,7 @@ type Props = {
 
 export function Button({ label, onPress, kind = "primary", disabled = false, testID, style, icon }: Props) {
   const isPrimary = kind === "primary";
+  const isDanger = kind === "danger";
   return (
     <Pressable
       onPress={onPress}
@@ -33,13 +34,13 @@ export function Button({ label, onPress, kind = "primary", disabled = false, tes
           <View
             style={[
               styles.face,
-              isPrimary ? styles.primary : styles.secondary,
+              isPrimary ? styles.primary : isDanger ? styles.danger : styles.secondary,
               pressed && styles.facePressed,
             ]}
           >
             <View style={styles.content}>
               {icon}
-              <Text style={[styles.label, isPrimary ? styles.primaryLabel : styles.secondaryLabel]}>{label}</Text>
+              <Text style={[styles.label, isPrimary || isDanger ? styles.primaryLabel : styles.secondaryLabel]}>{label}</Text>
             </View>
           </View>
         </>
@@ -71,6 +72,7 @@ const styles = StyleSheet.create({
   facePressed: { transform: [{ translateY: 3 }] },
   primary: { backgroundColor: colors.primary },
   primaryDepth: { backgroundColor: colors.accent },
+  danger: { backgroundColor: colors.danger },
   secondary: { backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border },
   secondaryDepth: { backgroundColor: colors.textFaint },
   disabled: { opacity: 0.45 },

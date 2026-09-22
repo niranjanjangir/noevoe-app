@@ -1,6 +1,6 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useEffect, useRef } from "react";
-import { Alert, BackHandler, ScrollView, StyleSheet, Text, View } from "react-native";
+import { useEffect, useRef, useState } from "react";
+import { BackHandler, ScrollView, StyleSheet, Text, View } from "react-native";
 import {
   capabilityProgress,
   restoreCapability,
@@ -12,6 +12,7 @@ import {
 } from "../../src/helpers";
 import { usePaths } from "../../src/state/PathsContext";
 import { Button } from "../../src/ui/Button";
+import { ConfirmModal } from "../../src/ui/confirmModal";
 import { LessonRow } from "../../src/ui/LessonRow";
 import { colors, radius, spacing, typography } from "../../src/ui/theme";
 
@@ -19,6 +20,12 @@ export default function CapabilityScreen() {
   const router = useRouter();
   const { id, lessonId } = useLocalSearchParams<{ id: string; lessonId?: string }>();
   const { activePath, updateActivePath } = usePaths();
+  const [confirmation, setConfirmation] = useState<{
+    title: string;
+    message: string;
+    confirmText: string;
+    onConfirm: () => void;
+  } | null>(null);
 
   const capability = findCapability(activePath?.capabilities ?? [], id ?? "");
   const openedLesson = useRef<string | null>(null);
@@ -57,18 +64,22 @@ export default function CapabilityScreen() {
       updateActivePath((p) => restoreLesson(p, lesson.id));
       return;
     }
-    Alert.alert("Retire this lesson?", "Retiring skips this lesson. You can restore it later. Have fun with the others!", [
-      { text: "Cancel", style: "cancel" },
-      { text: "Retire lesson", style: "destructive", onPress: () => updateActivePath((p) => retireLesson(p, lesson.id)) },
-    ]);
+    setConfirmation({
+      title: "Retire this lesson?",
+      message: "Retiring skips this lesson. You can restore it later. Have fun with the others!",
+      confirmText: "Retire lesson",
+      onConfirm: () => updateActivePath((p) => retireLesson(p, lesson.id)),
+    });
   }
 
   function confirmRetireCapability() {
     const capabilityId = capability!.id;
-    Alert.alert("Retire this capability?", "Retiring skips this capability. You can restore it later. Have fun with the others!", [
-      { text: "Cancel", style: "cancel" },
-      { text: "Retire", style: "destructive", onPress: () => updateActivePath((p) => retireCapability(p, capabilityId)) },
-    ]);
+    setConfirmation({
+      title: "Retire this capability?",
+      message: "Retiring skips this capability. You can restore it later. Have fun with the others!",
+      confirmText: "Retire",
+      onConfirm: () => updateActivePath((p) => retireCapability(p, capabilityId)),
+    });
   }
 
   return (
@@ -112,6 +123,18 @@ export default function CapabilityScreen() {
           <Button label="Retire this capability" kind="secondary" onPress={confirmRetireCapability} testID="retire-capability" />
         )}
       </View>
+      <ConfirmModal
+        visible={confirmation !== null}
+        title={confirmation?.title ?? ""}
+        message={confirmation?.message ?? ""}
+        confirmText={confirmation?.confirmText}
+        type="default"
+        onConfirm={() => {
+          confirmation?.onConfirm();
+          setConfirmation(null);
+        }}
+        onCancel={() => setConfirmation(null)}
+      />
     </ScrollView>
   );
 }

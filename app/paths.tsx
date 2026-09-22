@@ -1,9 +1,10 @@
 import { Stack, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { Alert, BackHandler, ScrollView, StyleSheet, Text, View } from "react-native";
+import { BackHandler, ScrollView, StyleSheet, Text, View } from "react-native";
 import { loadPath, type SavedPath } from "../src/helpers";
 import { usePaths } from "../src/state/PathsContext";
 import { Button } from "../src/ui/Button";
+import { ConfirmModal } from "../src/ui/confirmModal";
 import { PathCard } from "../src/ui/PathCard";
 import { colors, spacing, typography } from "../src/ui/theme";
 
@@ -11,6 +12,7 @@ export default function PathsScreen() {
   const router = useRouter();
   const { index, activePath, switchPath, deletePath } = usePaths();
   const [paths, setPaths] = useState<SavedPath[]>([]);
+  const [pathToDelete, setPathToDelete] = useState<SavedPath | null>(null);
 
   useEffect(() => {
     const subscription = BackHandler.addEventListener("hardwareBackPress", () => {
@@ -40,13 +42,6 @@ export default function PathsScreen() {
     if (ok) router.push("/path");
   }
 
-  function confirmDelete(path: SavedPath) {
-    Alert.alert("Delete this path?", `"${path.hobby}" and all its progress will be removed from this device.`, [
-      { text: "Cancel", style: "cancel" },
-      { text: "Delete", style: "destructive", onPress: () => deletePath(path.id) },
-    ]);
-  }
-
   return (
     <>
       <Stack.Screen options={{ headerBackVisible: false }} />
@@ -59,7 +54,7 @@ export default function PathsScreen() {
             path={path}
             active={path.id === index.activePathId}
             onPress={() => open(path)}
-            onLongPress={() => confirmDelete(path)}
+            onLongPress={() => setPathToDelete(path)}
           />
         ))}
         {paths.length > 0 && <Text style={styles.hint}>Long press a path to delete it.</Text>}
@@ -67,6 +62,18 @@ export default function PathsScreen() {
           <Button label="Start a new path" onPress={() => router.push("/onboarding")} testID="new-path" />
         </View>
       </ScrollView>
+      <ConfirmModal
+        visible={pathToDelete !== null}
+        title="Delete this path?"
+        message={pathToDelete ? "This path and all its progress will be removed from this device." : ""}
+        confirmText="Delete"
+        type="danger"
+        onConfirm={() => {
+          if (pathToDelete) deletePath(pathToDelete.id);
+          setPathToDelete(null);
+        }}
+        onCancel={() => setPathToDelete(null)}
+      />
     </>
   );
 }
