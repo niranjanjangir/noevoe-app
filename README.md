@@ -31,6 +31,7 @@ I've taken inspiration from these sources along with my own design taste
 - Onboarding: https://dribbble.com/shots/25694974-Dating-App-Questionnaire
 - Capability and Lessons List: https://www.behance.net/gallery/224737009/Learning-App-Journey
 - Lesson and other minimal UI: https://jangir10.vercel.app which is inspired by: https://x.com/justansub/status/1792593639576838497/photo/1
+- Yellow, black, and white color pallet: https://www.linkedin.com/posts/sgsurya_vasudevai-vasudevaiarena-betatesting-share-7506034999813582849-ES8m
 ---
 
 **NO External Validation Only Enjoyment!**
