@@ -167,6 +167,7 @@ export default function OnboardingScreen() {
                 placeholder="e.g. photography, so I can take good pictures on travel"
                 placeholderTextColor={colors.textFaint}
                 multiline
+                maxLength={300}
                 scrollEnabled
                 style={styles.input}
                 testID="hobby-input"
