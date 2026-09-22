@@ -11,6 +11,8 @@ import { noteNetworkFailure } from "./offline";
 export type CurriculumRequest = z.input<typeof CurriculumGenerateRequestSchema>;
 export type LessonRequest = z.input<typeof LessonGenerateRequestSchema>;
 
+const REJECTED_INPUT_MESSAGE = "Previous instruction seemed incomplete, inappropriate or unrelated.";
+
 export type ApiClientErrorCode =
   | "bad_request"
   | "hobby_rejected"
@@ -109,7 +111,12 @@ export async function postJson(path: string, body: unknown): Promise<unknown> {
   if (response.status === 422) {
     const rejected = CurriculumGenerateResponseSchema.safeParse(json);
     if (rejected.success && rejected.data.status === "rejected") {
-      throw new ApiClientError("rejected", rejected.data.reason);
+      throw new ApiClientError("rejected", REJECTED_INPUT_MESSAGE);
+    }
+
+    const rejectedError = ApiErrorSchema.safeParse(json);
+    if (rejectedError.success && rejectedError.data.error.code === "hobby_rejected") {
+      throw new ApiClientError("rejected", REJECTED_INPUT_MESSAGE);
     }
   }
 
