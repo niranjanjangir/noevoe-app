@@ -89,11 +89,12 @@ export default function CapabilityScreen() {
       <Text style={typography.body}>{capability.description}</Text>
 
       <View style={styles.criterionSection}>
-        <Text style={typography.heading}>You'll be able to…</Text>
+        <Text style={typography.body}>You'll be able to…</Text>
         {capability.masteryCriteria.map((criterion) => (
-          <Text key={criterion} style={typography.body}>
-            • {criterion}
-          </Text>
+          <View key={criterion} style={styles.criterionItem}>
+            <View style={styles.criterionBullet} />
+            <Text style={[typography.caption, styles.criterionText]}>{criterion}</Text>
+          </View>
         ))}
       </View>
 
@@ -149,7 +150,10 @@ function findCapability(capabilities: SavedCapability[], id: string): SavedCapab
 const styles = StyleSheet.create({
   container: { padding: spacing.xl, gap: spacing.lg, backgroundColor: colors.background, flexGrow: 1 },
   centered: { flex: 1, justifyContent: "center", alignItems: "center", gap: spacing.lg, padding: spacing.xl, backgroundColor: colors.background },
-  criterionSection: { gap: spacing.sm, borderWidth: 1, borderColor: colors.primaryPressed, borderRadius: radius.sm, padding: spacing.md },
+  criterionSection: { borderWidth: 1, borderColor: colors.primaryPressed, borderRadius: radius.sm, padding: spacing.md },
+  criterionItem: { flexDirection: "row", alignItems: "flex-start", gap: spacing.sm },
+  criterionBullet: { width: 4, height: 4, borderRadius: 3, backgroundColor: colors.text, marginTop: 6 },
+  criterionText: { flex: 1 },
   section: { gap: spacing.sm },
   struck: { textDecorationLine: "line-through", color: colors.retired },
   retiredNote: { ...typography.caption, color: colors.warning },
